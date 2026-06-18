@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Arjen Suunnittelija v3</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap');
+:root{
+  --bg:#080a0f;--s1:#10131a;--s2:#161b26;--s3:#1e2535;
+  --acc:#7c6fff;--grn:#2ecc71;--yel:#f1c40f;--red:#e74c3c;--blu:#3498db;--pur:#9b59b6;
+  --txt:#eceef5;--mut:#6b7194;--brd:#1e2535;
+  --r:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;min-height:100vh;padding-bottom:80px;max-width:480px;margin:0 auto;}
+h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif;}
+button{font-family:'Inter',sans-serif;}
+
+/* NAV */
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--s1);border-top:1px solid var(--brd);display:flex;z-index:100;padding:6px 0 env(safe-area-inset-bottom,6px);}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;background:none;border:none;color:var(--mut);font-size:0.58rem;cursor:pointer;transition:color .2s;}
+.nb.active{color:var(--acc);}
+.nb .ic{font-size:1.15rem;}
+
+/* PAGES */
+.page{display:none;padding:16px 14px 10px;}
+.page.active{display:block;}
+
+/* TOPBAR */
+.topbar{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;}
+.topbar h1{font-size:1.3rem;background:linear-gradient(135deg,var(--acc),#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.topbar p{font-size:0.75rem;color:var(--mut);margin-top:2px;}
+.badge{background:var(--s2);border:1px solid var(--brd);border-radius:20px;padding:4px 10px;font-size:0.72rem;color:var(--mut);}
+
+/* CARDS */
+.card{background:var(--s1);border:1px solid var(--brd);border-radius:var(--r);padding:14px;margin-bottom:10px;}
+.card-title{font-size:0.62rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);margin-bottom:10px;}
+
+/* NEXT ACTION */
+.next-card{background:linear-gradient(135deg,#0d1f14,#161b26);border:1px solid var(--grn);border-radius:var(--r);padding:14px;margin-bottom:10px;}
+.next-label{font-size:0.6rem;text-transform:uppercase;letter-spacing:.1em;color:var(--grn);margin-bottom:5px;font-weight:600;}
+.next-title{font-size:1rem;font-weight:700;margin-bottom:2px;}
+.next-time{font-size:0.75rem;color:var(--mut);}
+
+/* SALARY CARD */
+.salary-card{background:linear-gradient(135deg,#0d0a1f,#161b26);border:1px solid var(--acc);border-radius:var(--r);padding:14px;margin-bottom:10px;}
+.salary-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
+.sal-item{background:var(--s2);border-radius:10px;padding:10px;}
+.sal-label{font-size:0.62rem;color:var(--mut);margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em;}
+.sal-val{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;}
+.sal-sub{font-size:0.68rem;color:var(--mut);margin-top:2px;}
+
+/* BUTTONS */
+.btn{border:none;border-radius:10px;padding:10px 16px;font-size:0.84rem;font-weight:600;cursor:pointer;transition:all .2s;}
+.btn-acc{background:var(--acc);color:#fff;}
+.btn-grn{background:var(--grn);color:#0c0e14;}
+.btn-ghost{background:var(--s2);color:var(--txt);border:1px solid var(--brd);}
+.btn:hover{opacity:.85;}
+.btn:disabled{opacity:.35;cursor:not-allowed;}
+.btn-full{width:100%;}
+
+/* INPUTS */
+.inp{background:var(--s2);border:1px solid var(--brd);border-radius:10px;padding:10px 12px;color:var(--txt);font-family:'Inter',sans-serif;font-size:0.84rem;outline:none;width:100%;}
+.inp:focus{border-color:var(--acc);}
+.inp::placeholder{color:var(--mut);}
+
+/* SCHEDULE */
+.sched-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--s2);border-radius:10px;margin-bottom:5px;border:1px solid var(--brd);}
+.sched-time{font-size:0.7rem;color:var(--mut);min-width:44px;font-weight:500;}
+.sdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.d-work{background:var(--acc);}
+.d-gym{background:var(--grn);}
+.d-meal{background:var(--yel);}
+.d-sleep{background:#a78bfa;}
+.d-free{background:var(--pur);}
+.sched-body .st{font-size:0.85rem;font-weight:500;}
+.sched-body .ss{font-size:0.72rem;color:var(--mut);margin-top:1px;}
+
+/* CALENDAR */
+.cal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.cal-nav{background:none;border:none;color:var(--txt);font-size:1.2rem;cursor:pointer;padding:4px 8px;}
+.cal-month{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:10px;}
+.cal-day-name{text-align:center;font-size:0.62rem;color:var(--mut);padding:4px 0;font-weight:600;}
+.cal-day{text-align:center;padding:6px 2px;border-radius:8px;font-size:0.78rem;cursor:pointer;position:relative;min-height:32px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;}
+.cal-day:hover{background:var(--s2);}
+.cal-day.today{background:var(--acc);color:#fff;font-weight:700;}
+.cal-day.has-event::after{content:'';width:4px;height:4px;border-radius:50%;background:var(--grn);position:absolute;bottom:2px;}
+.cal-day.salary-day{border:1px solid var(--yel);}
+.cal-day.empty{cursor:default;}
+.cal-day.other-month{color:var(--mut);}
+
+/* EVENT LIST */
+.event-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--s2);border-radius:10px;margin-bottom:5px;border-left:3px solid var(--acc);}
+.event-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.event-body{flex:1;}
+.event-title{font-size:0.85rem;font-weight:500;}
+.event-time{font-size:0.72rem;color:var(--mut);}
+.event-del{background:none;border:none;color:var(--mut);cursor:pointer;font-size:0.9rem;}
+
+/* HABITS */
+.habit-row{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--s2);border-radius:10px;margin-bottom:5px;border:1px solid var(--brd);}
+.habit-icon{font-size:1rem;}
+.habit-name{flex:1;font-size:0.84rem;font-weight:500;}
+.ddots{display:flex;gap:3px;}
+.ddot{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--brd);background:transparent;cursor:pointer;font-size:0.56rem;color:var(--mut);display:flex;align-items:center;justify-content:center;font-weight:700;transition:all .2s;}
+.ddot.done{background:var(--grn);border-color:var(--grn);color:#080a0f;}
+.ddot.tod{border-color:var(--acc);color:var(--acc);}
+
+/* PROGRESS RING */
+.ring-wrap{position:relative;width:76px;height:76px;flex-shrink:0;}
+.ring-wrap svg{transform:rotate(-90deg);}
+.ring-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:1.2rem;font-weight:700;color:var(--grn);}
+.prog-hero{display:flex;align-items:center;gap:16px;padding:16px;background:linear-gradient(135deg,var(--s2),var(--s3));border:1px solid var(--brd);border-radius:var(--r);margin-bottom:10px;}
+
+/* BARS */
+.bar-row{margin-bottom:8px;}
+.bar-hdr{display:flex;justify-content:space-between;font-size:0.73rem;color:var(--mut);margin-bottom:4px;}
+.bar-track{height:5px;background:var(--s3);border-radius:3px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:3px;transition:width .5s ease;}
+.f-g{background:var(--grn);}
+.f-a{background:var(--acc);}
+.f-y{background:var(--yel);}
+
+/* MEALS */
+.meal-item{background:var(--s2);border:1px solid var(--brd);border-radius:12px;padding:12px;margin-bottom:8px;}
+.meal-header{display:flex;align-items:center;gap:8px;cursor:pointer;}
+.meal-emoji{font-size:1.3rem;}
+.meal-info{flex:1;}
+.meal-name{font-size:0.87rem;font-weight:600;}
+.meal-kcal{font-size:0.72rem;color:var(--mut);margin-top:1px;}
+.meal-check{width:22px;height:22px;border-radius:6px;border:1.5px solid var(--brd);display:flex;align-items:center;justify-content:center;font-size:0.75rem;transition:all .2s;cursor:pointer;flex-shrink:0;}
+.meal-check.done{background:var(--grn);border-color:var(--grn);color:#080a0f;}
+.meal-expand{display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--brd);}
+.meal-expand.open{display:block;}
+.meal-expand p{font-size:0.78rem;color:var(--mut);line-height:1.6;white-space:pre-line;}
+.meal-toggle{background:none;border:none;color:var(--mut);font-size:0.75rem;margin-left:auto;cursor:pointer;}
+
+/* GROCERY */
+.grocery-item{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--s2);border-radius:9px;margin-bottom:5px;}
+.gcheck{width:20px;height:20px;border-radius:5px;border:1.5px solid var(--brd);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.7rem;transition:all .2s;flex-shrink:0;}
+.gcheck.done{background:var(--grn);border-color:var(--grn);color:#080a0f;}
+.gname{flex:1;font-size:0.84rem;}
+.gname.done{text-decoration:line-through;color:var(--mut);}
+.gdel{background:none;border:none;color:var(--mut);cursor:pointer;font-size:0.85rem;}
+
+/* FINANCE */
+.fin-hero{background:linear-gradient(135deg,#0d0a1f,#161b26);border:1px solid var(--acc);border-radius:var(--r);padding:16px;margin-bottom:10px;text-align:center;}
+.fin-big{font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:700;}
+.fin-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.fin-stat{background:var(--s2);border:1px solid var(--brd);border-radius:12px;padding:12px;}
+.fin-lbl{font-size:0.6rem;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);margin-bottom:3px;}
+.fin-val{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;}
+.fin-sub{font-size:0.68rem;color:var(--mut);margin-top:2px;}
+
+/* ASP BAR */
+.asp-bar-big{height:10px;background:var(--s3);border-radius:5px;overflow:hidden;margin:8px 0;}
+.asp-fill{height:100%;background:linear-gradient(90deg,var(--acc),var(--grn));border-radius:5px;transition:width .8s ease;}
+.asp-labels{display:flex;justify-content:space-between;font-size:0.7rem;color:var(--mut);}
+
+/* INVEST ALLOC */
+.alloc-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--s2);border-radius:10px;margin-bottom:5px;}
+.alloc-icon{font-size:1rem;}
+.alloc-name{flex:1;font-size:0.84rem;font-weight:500;}
+.alloc-amt{font-family:'Space Grotesk',sans-serif;font-size:0.95rem;font-weight:700;}
+.alloc-sub{font-size:0.68rem;color:var(--mut);}
+
+/* TIPS */
+.tip{background:var(--s2);border-left:3px solid var(--acc);border-radius:0 10px 10px 0;padding:10px 12px;margin-bottom:7px;}
+.tip-title{font-size:0.82rem;font-weight:600;margin-bottom:2px;}
+.tip-body{font-size:0.73rem;color:var(--mut);line-height:1.5;}
+
+/* AI CHAT */
+.chat-wrap{background:var(--s1);border:1px solid var(--brd);border-radius:var(--r);overflow:hidden;margin-bottom:10px;}
+.chat-head{padding:12px 14px;border-bottom:1px solid var(--brd);display:flex;align-items:center;gap:8px;}
+.chat-av{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--acc),#c084fc);display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;}
+.chat-name{font-size:0.86rem;font-weight:600;}
+.chat-status{font-size:0.68rem;color:var(--grn);margin-left:auto;}
+.chat-msgs{padding:12px;min-height:140px;max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:7px;}
+.msg{padding:9px 13px;border-radius:12px;font-size:0.82rem;line-height:1.55;max-width:88%;}
+.msg.ai{background:var(--s2);align-self:flex-start;}
+.msg.user{background:var(--acc);align-self:flex-end;color:#fff;}
+.msg.loading{color:var(--mut);font-style:italic;font-size:0.78rem;}
+.chat-inp-row{display:flex;gap:6px;padding:10px;border-top:1px solid var(--brd);}
+.chat-inp{flex:1;background:var(--s2);border:1px solid var(--brd);border-radius:10px;padding:9px 12px;color:var(--txt);font-family:'Inter',sans-serif;font-size:0.82rem;outline:none;}
+.chat-inp:focus{border-color:var(--acc);}
+.chat-inp::placeholder{color:var(--mut);}
+.send-btn{background:var(--acc);border:none;border-radius:10px;padding:9px 14px;color:#fff;font-size:0.82rem;font-weight:700;cursor:pointer;}
+.send-btn:disabled{opacity:.35;cursor:not-allowed;}
+
+/* QUICK ASK BTNS */
+.quick-btns{display:grid;gap:6px;}
+.qbtn{background:var(--s2);border:1px solid var(--brd);border-radius:10px;padding:11px 13px;color:var(--txt);font-size:0.82rem;font-weight:500;cursor:pointer;text-align:left;transition:border-color .2s;}
+.qbtn:hover{border-color:var(--acc);}
+
+/* SUNDAY MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:flex;align-items:flex-end;justify-content:center;}
+.modal-overlay.hidden{display:none;}
+.modal{background:var(--s1);border:1px solid var(--brd);border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:480px;max-height:80vh;overflow-y:auto;}
+.modal h2{font-size:1.1rem;margin-bottom:6px;}
+.modal p{font-size:0.82rem;color:var(--mut);margin-bottom:14px;}
+
+/* WEEK TOGGLE */
+.wtoggle{display:flex;gap:7px;margin-bottom:12px;}
+.wbtn{flex:1;padding:9px;border:1px solid var(--brd);border-radius:9px;background:var(--s1);color:var(--mut);font-family:'Space Grotesk',sans-serif;font-size:0.82rem;font-weight:500;cursor:pointer;transition:all .2s;}
+.wbtn.active{background:var(--acc);border-color:var(--acc);color:#fff;}
+
+/* WEEK PLAN */
+.wp-row{display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--s2);border-radius:9px;margin-bottom:4px;}
+.wp-day{font-size:0.76rem;font-weight:700;min-width:28px;color:var(--mut);}
+.wp-day.tod{color:var(--acc);}
+.wp-tag{font-size:0.68rem;padding:3px 8px;border-radius:6px;font-weight:600;}
+.tg{background:rgba(46,204,113,.12);color:var(--grn);}
+.ts{background:rgba(231,76,60,.12);color:var(--red);}
+.tr{background:rgba(107,113,148,.1);color:var(--mut);}
+.tw{background:rgba(124,111,255,.12);color:var(--acc);}
+.tf{background:rgba(241,196,15,.12);color:var(--yel);}
+
+/* TOAST */
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:var(--grn);color:#080a0f;font-size:0.8rem;font-weight:700;padding:9px 18px;border-radius:30px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;}
+
+/* KCAL RING */
+.kcal-ring{display:flex;align-items:center;gap:14px;padding:14px;background:var(--s2);border-radius:12px;margin-bottom:10px;}
+.kcal-info h3{font-size:1rem;font-weight:700;}
+.kcal-info p{font-size:0.75rem;color:var(--mut);margin-top:2px;}
+.kcal-bar{flex:1;height:8px;background:var(--s3);border-radius:4px;overflow:hidden;margin-top:6px;}
+.kcal-fill{height:100%;border-radius:4px;transition:width .5s;}
+
+/* SECTION DIVIDER */
+.sec-title{font-size:0.62rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);margin:14px 0 8px;}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- SUNDAY MODAL -->
+<div class="modal-overlay hidden" id="sunday-modal">
+  <div class="modal">
+    <div style="font-size:1.5rem;margin-bottom:8px">📋</div>
+    <h2>Viikkopalaveri — hyvää sunnuntaita!</h2>
+    <p>Ennen ensi viikkoa — käydään läpi kulunut viikko ja suunnitellaan tuleva.</p>
+    <div id="sunday-chat" style="max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:7px;margin-bottom:12px;"></div>
+    <div style="display:flex;gap:6px;">
+      <input class="inp" id="sunday-inp" placeholder="Vastaa valmentajalle..." onkeydown="if(event.key==='Enter')sundayReply()">
+      <button class="btn btn-acc" onclick="sundayReply()">→</button>
+    </div>
+    <button class="btn btn-ghost btn-full" style="margin-top:8px" onclick="closeSunday()">Sulje</button>
+  </div>
+</div>
+
+<!-- PAGE: TÄNÄÄN -->
+<div class="page active" id="page-today">
+  <div class="topbar">
+    <div><h1 id="greet-title">Hei! 👋</h1><p id="today-date">Ladataan...</p></div>
+    <div class="badge" id="week-badge">Vko —</div>
+  </div>
+
+  <div class="next-card">
+    <div class="next-label">⚡ Seuraavaksi</div>
+    <div class="next-title" id="next-title">Lasketaan...</div>
+    <div class="next-time" id="next-time"></div>
+  </div>
+
+  <div class="wtoggle">
+    <button class="wbtn active" id="wa" onclick="setWeek('aamu')">☀️ Aamuviikko</button>
+    <button class="wbtn" id="wi" onclick="setWeek('ilta')">🌙 Iltaviikko</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Tänään</div>
+    <div id="sched-list"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Viikon treeniohjelma</div>
+    <div id="week-plan"></div>
+  </div>
+</div>
+
+<!-- PAGE: RUTIINIT -->
+<div class="page" id="page-habits">
+  <div class="topbar"><div><h1>Rutiinit ✅</h1><p>Viikon seuranta</p></div></div>
+
+  <div class="prog-hero">
+    <div class="ring-wrap">
+      <svg width="76" height="76" viewBox="0 0 76 76">
+        <circle cx="38" cy="38" r="32" fill="none" stroke="#1e2535" stroke-width="7"/>
+        <circle cx="38" cy="38" r="32" fill="none" stroke="#2ecc71" stroke-width="7"
+          stroke-dasharray="201" stroke-dashoffset="201" id="ring-c" stroke-linecap="round"/>
+      </svg>
+      <div class="ring-label" id="ring-pct">0%</div>
+    </div>
+    <div style="flex:1">
+      <h3 style="font-size:.95rem;font-weight:700;margin-bottom:3px">Viikon edistyminen</h3>
+      <p style="font-size:.78rem;color:var(--mut)" id="ring-desc">Merkkaa rutiinit alla</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Edistyminen</div>
+    <div class="bar-row"><div class="bar-hdr"><span>🏋️ Sali</span><span id="b-gym">0/3</span></div><div class="bar-track"><div class="bar-fill f-g" id="bf-gym" style="width:0%"></div></div></div>
+    <div class="bar-row"><div class="bar-hdr"><span>🍱 Ateriat</span><span id="b-meal">0/4</span></div><div class="bar-track"><div class="bar-fill f-y" id="bf-meal" style="width:0%"></div></div></div>
+    <div class="bar-row"><div class="bar-hdr"><span>✅ Rutiinit</span><span id="b-hab">0/35</span></div><div class="bar-track"><div class="bar-fill f-a" id="bf-hab" style="width:0%"></div></div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Päivittäiset rutiinit — merkitse tänään</div>
+    <div id="habit-list"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Muokkaa rutiineja AI:lla</div>
+    <p style="font-size:.78rem;color:var(--mut);margin-bottom:10px">Kerro valmentajalle mitä haluat muuttaa rutiineissasi.</p>
+    <div style="display:flex;gap:6px;">
+      <input class="inp" id="habit-edit-inp" placeholder="Esim: lisää venyttely aamuihin...">
+      <button class="btn btn-acc" onclick="editHabitsAI()">→</button>
+    </div>
+    <div id="habit-ai-reply" style="margin-top:8px;font-size:.8rem;color:var(--mut);line-height:1.6;display:none;"></div>
+  </div>
+</div>
+
+<!-- PAGE: RUOKA -->
+<div class="page" id="page-food">
+  <div class="topbar"><div><h1>Ruoka 🍱</h1><p>2600–2800 kcal / päivä</p></div></div>
+
+  <div class="kcal-ring">
+    <div style="font-size:1.5rem">🔥</div>
+    <div class="kcal-info" style="flex:1">
+      <h3><span id="kcal-eaten">0</span> / 2700 kcal</h3>
+      <p>Päivän tavoite saavutettu <span id="kcal-pct">0%</span></p>
+      <div class="kcal-bar"><div class="kcal-fill f-y" id="kcal-bar-fill" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Tänään — merkitse syödyksi</div>
+    <div id="meal-list"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🛒 Kauppalista tällä viikolla</div>
+    <div id="grocery-list"></div>
+    <div style="display:flex;gap:6px;margin-top:8px">
+      <input class="inp" id="gro-inp" placeholder="Lisää tuote..." onkeydown="if(event.key==='Enter')addGrocery()">
+      <button class="btn btn-acc" onclick="addGrocery()">+</button>
+    </div>
+    <button class="btn btn-ghost btn-full" style="margin-top:8px;font-size:.78rem" onclick="genGroceryAI()">🤖 Luo kauppalista AI:lla</button>
+  </div>
+</div>
+
+<!-- PAGE: KALENTERI -->
+<div class="page" id="page-cal">
+  <div class="topbar"><div><h1>Kalenteri 📅</h1><p id="cal-month-label">Kesäkuu 2025</p></div></div>
+
+  <div class="card">
+    <div class="cal-header">
+      <button class="cal-nav" onclick="calPrev()">‹</button>
+      <span class="cal-month" id="cal-month-title">Kesäkuu</span>
+      <button class="cal-nav" onclick="calNext()">›</button>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title" id="cal-selected-label">Tapahtumat</div>
+    <div id="event-list"></div>
+    <div style="margin-top:10px">
+      <input class="inp" id="ev-title" placeholder="Tapahtuman nimi" style="margin-bottom:6px">
+      <div style="display:flex;gap:6px;margin-bottom:6px">
+        <input class="inp" id="ev-time" placeholder="Kellonaika (esim 16:00)" style="flex:1">
+        <select class="inp" id="ev-color" style="flex:1">
+          <option value="var(--acc)">💜 Normaali</option>
+          <option value="var(--grn)">💚 Treeni</option>
+          <option value="var(--yel)">💛 Tärkeä</option>
+          <option value="var(--red)">❤️ Kiireinen</option>
+        </select>
+      </div>
+      <button class="btn btn-acc btn-full" onclick="addEvent()">+ Lisää tapahtuma</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: RAHA -->
+<div class="page" id="page-money">
+  <div class="topbar"><div><h1>Varallisuus 💰</h1><p>Rakenna taloudellinen vapaus</p></div></div>
+
+  <div class="salary-card">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);margin-bottom:3px">Seuraava palkka</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;color:var(--yel)" id="next-salary-date">—</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:.62rem;color:var(--mut);margin-bottom:3px">Päiviä jäljellä</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:700;color:var(--yel)" id="days-to-salary">—</div>
+      </div>
+    </div>
+    <div class="salary-grid">
+      <div class="sal-item"><div class="sal-label">Nordnet</div><div class="sal-val" style="color:var(--grn)">250 €</div><div class="sal-sub">Indeksirahasto</div></div>
+      <div class="sal-item"><div class="sal-label">ASP-tili</div><div class="sal-val" style="color:var(--acc)">100 €</div><div class="sal-sub">Ensiasunto</div></div>
+      <div class="sal-item"><div class="sal-label">Puskuri</div><div class="sal-val" style="color:var(--blu)">100 €</div><div class="sal-sub">Säästötili</div></div>
+      <div class="sal-item"><div class="sal-label">Käyttöön</div><div class="sal-val" style="color:var(--yel)">350 €</div><div class="sal-sub">Ruoka, eläminen</div></div>
+    </div>
+  </div>
+
+  <div class="fin-grid">
+    <div class="fin-stat"><div class="fin-lbl">ASP-tili</div><div class="fin-val" style="color:var(--acc)" id="fin-asp">3 000 €</div><div class="fin-sub">Tavoite 10 000€</div></div>
+    <div class="fin-stat"><div class="fin-lbl">Nordnet</div><div class="fin-val" style="color:var(--grn)" id="fin-invest">0 €</div><div class="fin-sub">Indeksirahasto</div></div>
+    <div class="fin-stat"><div class="fin-lbl">Puskuri</div><div class="fin-val" style="color:var(--blu)" id="fin-buf">0 €</div><div class="fin-sub">Hätävara</div></div>
+    <div class="fin-stat"><div class="fin-lbl">Kulut/kk</div><div class="fin-val" style="color:var(--red)" id="fin-exp">0 €</div><div class="fin-sub">Tänä kuuna</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">ASP-tavoite — ensiasunto 🏠</div>
+    <div class="asp-bar-big"><div class="asp-fill" id="asp-bar" style="width:30%"></div></div>
+    <div class="asp-labels"><span id="asp-cur">3 000 €</span><span>Tavoite: 10 000 €</span></div>
+    <p style="font-size:.72rem;color:var(--mut);margin-top:8px" id="asp-eta">Lasketaan...</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Kulut tänä kuuna</div>
+    <div id="exp-list"></div>
+    <div style="display:flex;gap:6px;margin-top:8px">
+      <input class="inp" id="exp-name" placeholder="Kulun nimi">
+      <input class="inp" id="exp-amt" placeholder="€" type="number" style="max-width:65px">
+      <button class="btn btn-acc" onclick="addExpense()">+</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Päivitä saldot</div>
+    <div style="display:grid;gap:7px">
+      <div style="display:flex;gap:8px;align-items:center"><span style="font-size:.8rem;color:var(--mut);min-width:80px">ASP €</span><input class="inp" id="inp-asp" type="number" placeholder="3000"></div>
+      <div style="display:flex;gap:8px;align-items:center"><span style="font-size:.8rem;color:var(--mut);min-width:80px">Nordnet €</span><input class="inp" id="inp-invest" type="number" placeholder="0"></div>
+      <div style="display:flex;gap:8px;align-items:center"><span style="font-size:.8rem;color:var(--mut);min-width:80px">Puskuri €</span><input class="inp" id="inp-buf" type="number" placeholder="0"></div>
+      <button class="btn btn-grn btn-full" onclick="saveFinance()">Tallenna</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📖 Vaurastumisen polku</div>
+    <div class="tip"><div class="tip-title">🎯 Sinun suunnitelmasi (20v)</div><div class="tip-body">Palkka 700€/2vko → Nordnet 250€ + ASP 100€ + Puskuri 100€ + Käyttö 350€<br><br>Vuodessa: Nordnet kasvaa ~6 500€/v · ASP kasvaa ~2 600€/v<br>Ikä 22: ASP täynnä → haet asuntolainaa<br>Ikä 23+: Kaikki säästöt Nordnetiin → varallisuus kasvaa</div></div>
+    <div class="tip"><div class="tip-title">1. Maksa ensin itsellesi</div><div class="tip-body">Heti palkkapäivänä: Nordnet 250€, ASP 100€, Puskuri 100€. Automaattisesti — ei tahdonvoimaa.</div></div>
+    <div class="tip"><div class="tip-title">2. Indeksirahasto voittaa pitkässä juoksussa</div><div class="tip-body">250€/kk × 7% vuosituotto × 10v = ~43 000€. Aloita nyt, aika on tärkein tekijä.</div></div>
+    <div class="tip"><div class="tip-title">3. M4 tulee — mutta oikeaan aikaan</div><div class="tip-body">Kun sijoitukset tuottavat enemmän kuin lainan korot. Todennäköisesti ikä 26–28. Kärsivällisyys rakentaa varallisuuden.</div></div>
+  </div>
+</div>
+
+<!-- PAGE: AI VALMENTAJA -->
+<div class="page" id="page-chat">
+  <div class="topbar"><div><h1>Valmentaja 🤖</h1><p>Puhu vapaasti</p></div></div>
+
+  <div class="chat-wrap">
+    <div class="chat-head">
+      <div class="chat-av">AI</div>
+      <span class="chat-name">Henkilökohtainen valmentaja</span>
+      <span class="chat-status">● Online</span>
+    </div>
+    <div class="chat-msgs" id="chat-msgs">
+      <div class="msg ai">Moi! Olen valmentajasi. Voin muokata rutiinejasi, suunnitella viikkosi, auttaa ruokavaliossa tai miettiä sijoitusstrategiaa. Mitä tarvitset? 💪</div>
+    </div>
+    <div class="chat-inp-row">
+      <input class="chat-inp" id="chat-inp" placeholder="Kirjoita tai kysy..." onkeydown="if(event.key==='Enter')sendChat()">
+      <button class="send-btn" id="send-btn" onclick="sendChat()">→</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Pika-kysymykset</div>
+    <div class="quick-btns">
+      <button class="qbtn" onclick="quickAsk('Suunnittele minulle optimaalinen viikko aamuvuorolle. Sali 3x, meal prep sunnuntaina, nukkuminen klo 22. Anna konkreettinen aikataulu joka päivälle.')">📅 Suunnittele tämä viikko</button>
+      <button class="qbtn" onclick="quickAsk('Mitä minun pitäisi saavuttaa tänä vuonna? Olen 20v, ansaitsen 1600€/kk (700€/2vko), asun vanhemmilla, ASP 3000€, Nordnet 0€. Tavoitteet: asunto, sijoitukset, keho kuntoon.')">🎯 Vuosisuunnitelma 2025</button>
+      <button class="qbtn" onclick="quickAsk('Tein salilla tänään. Anna palautetta ja kysy mitä tein, sitten ehdota huomisen treeni.')">💪 Treenianalyysi</button>
+      <button class="qbtn" onclick="quickAsk('Loin kauppalistan viikon meal prepille: kana, riisi, bataatti, jauheliha. Mitä muuta tarvitsen 2700 kcal päivätavoitteeseen? Anna tarkka lista grammoina.')">🛒 Kauppalista optimoitu</button>
+      <button class="qbtn" onclick="quickAsk('Onnistuiko viikko? Kysy minulta 3 kysymystä tämän viikon rutiineista, treenistä ja ravinnosta. Analysoi sitten ja anna kehitysehdotukset.')">📊 Viikkoanalyysi</button>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="nav">
+  <button class="nb active" id="nav-today" onclick="showPage('today')"><span class="ic">🏠</span>Tänään</button>
+  <button class="nb" id="nav-habits" onclick="showPage('habits')"><span class="ic">✅</span>Rutiinit</button>
+  <button class="nb" id="nav-food" onclick="showPage('food')"><span class="ic">🍱</span>Ruoka</button>
+  <button class="nb" id="nav-cal" onclick="showPage('cal')"><span class="ic">📅</span>Kalenteri</button>
+  <button class="nb" id="nav-money" onclick="showPage('money')"><span class="ic">💰</span>Raha</button>
+  <button class="nb" id="nav-chat" onclick="showPage('chat')"><span class="ic">🤖</span>AI</button>
+</nav>
+
+<script>
+// =========== STATE ===========
+function loadST() { try { return JSON.parse(localStorage.getItem('arki3')||'{}'); } catch { return {}; } }
+function saveST() { localStorage.setItem('arki3', JSON.stringify(ST)); }
+
+const DEF = {
+  weekType:'aamu',
+  habits: Array(5*7).fill(false),
+  meals: [false,false,false,false,false],
+  grocery: [],
+  expenses: [],
+  events: {},
+  asp: 3000, invest: 0, buffer: 0,
+  chatHistory: [],
+  sundayDone: '',
+  customHabits: null,
+  calYear: new Date().getFullYear(),
+  calMonth: new Date().getMonth(),
+};
+const ST = Object.assign({}, DEF, loadST());
+// ensure arrays
+if (!ST.habits || ST.habits.length < 35) ST.habits = Array(35).fill(false);
+if (!ST.meals || ST.meals.length < 5) ST.meals = [false,false,false,false,false];
+if (!ST.grocery) ST.grocery = [];
+if (!ST.expenses) ST.expenses = [];
+if (!ST.events) ST.events = {};
+if (!ST.chatHistory) ST.chatHistory = [];
+
+const DAYS = ['Ma','Ti','Ke','To','Pe','La','Su'];
+const todayJS = new Date().getDay();
+const todayIdx = todayJS===0?6:todayJS-1;
+
+// =========== SCHEDULES ===========
+const scheds = {
+  aamu:[
+    {t:'05:00',l:'Herätys + aamupala',s:'Kaurapuuro 400kcal + kahvi',type:'meal'},
+    {t:'06:00',l:'Työvuoro alkaa',s:'Aamuviikko 06:00–14:30',type:'work'},
+    {t:'14:30',l:'Työvuoro loppuu',s:'Lounas — kana+riisi 500kcal',type:'meal'},
+    {t:'16:00',l:'🏋️ Sali / urheilu',s:'Treeni 60–75 min + proteiinishake',type:'gym'},
+    {t:'18:00',l:'Päivällinen',s:'Bataatti+jauheliha 600kcal',type:'meal'},
+    {t:'20:30',l:'Iltapala',s:'Rahka tai kananmuna 300kcal',type:'meal'},
+    {t:'21:30',l:'Rauhoittuminen',s:'Ei ruutua — lue tai venyttele',type:'free'},
+    {t:'22:00',l:'Nukkumaan',s:'Tavoite 7–8h unta',type:'sleep'},
+  ],
+  ilta:[
+    {t:'08:00',l:'Herätys + aamupala',s:'Kaurapuuro 400kcal + kahvi',type:'meal'},
+    {t:'09:30',l:'🏋️ Sali aamulla',s:'Treeni ennen iltavuoroa',type:'gym'},
+    {t:'11:30',l:'Lounas',s:'Kana+riisi 500kcal',type:'meal'},
+    {t:'14:30',l:'Työvuoro alkaa',s:'Iltaviikko 14:30–23:00',type:'work'},
+    {t:'17:00',l:'Välipala töissä',s:'Eväät — 400kcal',type:'meal'},
+    {t:'21:00',l:'Iltapala töissä',s:'Rahka tai proteiinipatukka 300kcal',type:'meal'},
+    {t:'23:00',l:'Työvuoro loppuu',s:'Kevyt iltapala 200kcal',type:'meal'},
+    {t:'00:30',l:'Nukkumaan',s:'Tavoite 7–8h unta',type:'sleep'},
+  ]
+};
+
+const weekPlans = {
+  aamu:[
+    {d:'Ma',a:'Sali — rintalihakset',tag:'tg'},
+    {d:'Ti',a:'Työvuoro — lepo',tag:'tw'},
+    {d:'Ke',a:'Sali — selkä + hauis',tag:'tg'},
+    {d:'To',a:'Padel tai sulkapallo 🏸',tag:'ts'},
+    {d:'Pe',a:'Sali — jalat',tag:'tg'},
+    {d:'La',a:'Aktiivinen lepo / kävely',tag:'tr'},
+    {d:'Su',a:'Lepo + Meal Prep 🍱',tag:'tf'},
+  ],
+  ilta:[
+    {d:'Ma',a:'Sali aamulla — rinta',tag:'tg'},
+    {d:'Ti',a:'Sali aamulla — selkä',tag:'tg'},
+    {d:'Ke',a:'Padel tai sulkapallo 🏸',tag:'ts'},
+    {d:'To',a:'Sali aamulla — jalat',tag:'tg'},
+    {d:'Pe',a:'Lepo',tag:'tr'},
+    {d:'La',a:'Aktiivinen lepo / kävely',tag:'tr'},
+    {d:'Su',a:'Lepo + Meal Prep 🍱',tag:'tf'},
+  ]
+};
+
+const defaultHabits = [
+  {icon:'💧',name:'Juo 2–3L vettä'},
+  {icon:'🏋️',name:'Treeni tehty'},
+  {icon:'🍱',name:'Söin kaikki ateriat'},
+  {icon:'😴',name:'7–8h unta'},
+  {icon:'💰',name:'Ei turhaa kulutusta'},
+];
+
+const defaultMeals = [
+  {e:'🥣',n:'Aamupala — kaurapuuro',k:400,macro:'65g hiilari • 12g prot',
+   r:'Kaurahiutaleet 80g + maito 2dl + banaani + 1 rkl maapähkinävoita. Lisää mustikoita tai mansikkaa.'},
+  {e:'🍗',n:'Lounas — kana + riisi',k:550,macro:'55g hiilari • 45g prot',
+   r:'Kananrinta 200g (grillattu tai paistettuna) + riisi 120g kuiv. + paprika + kurkku. Mausta sitruuna + valkosipuli.'},
+  {e:'🍠',n:'Päivällinen — bataatti + jauheliha',k:620,macro:'60g hiilari • 40g prot',
+   r:'Bataatti 250g (uunissa 200° 25min) + nauta/sikajauheliha 200g + sipuli + tomaattimurska + oregano.'},
+  {e:'🥛',n:'Välipala — rahka + hedelmä',k:320,macro:'35g hiilari • 25g prot',
+   r:'Maitorahka 250g + banaani tai omena + pähkinöitä 30g. Nopea 5min välipala.'},
+  {e:'🥚',n:'Iltapala — munat tai rahka',k:280,macro:'10g hiilari • 22g prot',
+   r:'Munakokkeli 3 munaa + juusto TAI rahka 200g + marjat. Pidä keveänä ennen nukkumista.'},
+];
+
+function getHabits() { return ST.customHabits || defaultHabits; }
+function getMeals() { return defaultMeals; }
+
+// =========== SALARY ===========
+function getSalaryDates() {
+  const start = new Date(2025, 5, 19); // 19.6.2025
+  const dates = [];
+  let d = new Date(start);
+  for (let i=0; i<24; i++) {
+    dates.push(new Date(d));
+    d.setDate(d.getDate()+14);
+  }
+  return dates;
+}
+
+function getNextSalary() {
+  const now = new Date(); now.setHours(0,0,0,0);
+  const dates = getSalaryDates();
+  for (const d of dates) {
+    const dd = new Date(d); dd.setHours(0,0,0,0);
+    if (dd >= now) return dd;
+  }
+  return null;
+}
+
+function isSalaryDay(year, month, day) {
+  const dates = getSalaryDates();
+  return dates.some(d => d.getFullYear()===year && d.getMonth()===month && d.getDate()===day);
+}
+
+// =========== RENDER TODAY ===========
+function renderToday() {
+  const now = new Date();
+  const opts = {weekday:'long',day:'numeric',month:'long'};
+  document.getElementById('today-date').textContent = now.toLocaleDateString('fi-FI', opts);
+  const h = now.getHours();
+  const g = h<10?'Huomenta! ☀️':h<14?'Päivää! 🌤':h<18?'Iltapäivää! 🌅':h<22?'Iltaa! 🌙':'Yötä! 🌑';
+  document.getElementById('greet-title').textContent = g;
+  document.getElementById('week-badge').textContent = 'Vko '+getWeekNum(now);
+  renderNextAction();
+  renderSched();
+  renderWeekPlan();
+}
+
+function renderNextAction() {
+  const now = new Date();
+  const h = now.getHours(), m = now.getMinutes();
+  const nowM = h*60+m;
+  const wt = ST.weekType;
+  const acts = wt==='aamu'?[
+    {h:5,m:0,t:'⏰ Herää — kaurapuuro odottaa',s:'Syö hyvä aamupala ennen töitä'},
+    {h:6,m:0,t:'💼 Työvuoro alkaa',s:'Muista ottaa eväät mukaan'},
+    {h:14,m:30,t:'🏋️ Töistä salille!',s:'Paras aika treenata on nyt'},
+    {h:16,m:0,t:'🍗 Syö lounas / päivällinen',s:'Kana+riisi tai bataatti+jauheliha'},
+    {h:18,m:0,t:'🥛 Välipalaika',s:'Rahka + hedelmä — 320kcal'},
+    {h:21,m:30,t:'📵 Puhelin pois',s:'Rauhoitu ennen nukkumista'},
+    {h:22,m:0,t:'😴 Nukkumaan',s:'7–8h unta = parempi treeni huomenna'},
+  ]:[
+    {h:8,m:0,t:'⏰ Herää — aamupala',s:'Syö ennen salia'},
+    {h:9,m:30,t:'🏋️ Sali nyt!',s:'Treeni ennen iltavuoroa'},
+    {h:11,m:30,t:'🍗 Lounas',s:'Kana+riisi palautumiseen'},
+    {h:14,m:30,t:'💼 Iltavuoro alkaa',s:'Muista eväät töihin'},
+    {h:17,m:0,t:'🥪 Välipala töissä',s:'400kcal — pysy energisenä'},
+    {h:23,m:0,t:'🌙 Työvuoro loppuu',s:'Kevyt iltapala ja nukkumaan'},
+  ];
+  for (const a of acts) {
+    const aM = a.h*60+a.m;
+    if (aM > nowM) {
+      const diff = aM-nowM;
+      const dh = Math.floor(diff/60), dm = diff%60;
+      document.getElementById('next-title').textContent = a.t;
+      document.getElementById('next-time').textContent = (dh>0?dh+'h ':'')+(dm>0?dm+'min ':'')+'päästä — '+a.s;
+      return;
+    }
+  }
+  document.getElementById('next-title').textContent = '😴 Nuku hyvin!';
+  document.getElementById('next-time').textContent = 'Huominen alkaa taas 05:00';
+}
+
+function renderSched() {
+  document.getElementById('sched-list').innerHTML = scheds[ST.weekType].map(s=>`
+    <div class="sched-item">
+      <span class="sched-time">${s.t}</span>
+      <div class="sdot d-${s.type}"></div>
+      <div class="sched-body"><div class="st">${s.l}</div><div class="ss">${s.s}</div></div>
+    </div>`).join('');
+}
+
+function renderWeekPlan() {
+  document.getElementById('week-plan').innerHTML = weekPlans[ST.weekType].map((d,i)=>`
+    <div class="wp-row">
+      <span class="wp-day ${i===todayIdx?'tod':''}">${d.d}</span>
+      <span class="wp-tag ${d.tag}">${d.a}</span>
+      ${i===todayIdx?'<span style="font-size:.66rem;color:var(--acc);margin-left:auto">← tänään</span>':''}
+    </div>`).join('');
+}
+
+function setWeek(t) {
+  ST.weekType=t;saveST();
+  document.getElementById('wa').classList.toggle('active',t==='aamu');
+  document.getElementById('wi').classList.toggle('active',t==='ilta');
+  renderSched(); renderWeekPlan(); renderNextAction();
+}
+
+// =========== HABITS ===========
+function renderHabits() {
+  const habits = getHabits();
+  document.getElementById('habit-list').innerHTML = habits.map((h,hi)=>`
+    <div class="habit-row">
+      <span class="habit-icon">${h.icon}</span>
+      <span class="habit-name">${h.name}</span>
+      <div class="ddots">
+        ${DAYS.map((d,di)=>`
+          <div class="ddot ${ST.habits[hi*7+di]?'done':''} ${di===todayIdx?'tod':''}"
+            onclick="toggleHabit(${hi},${di})">${d[0]}</div>
+        `).join('')}
+      </div>
+    </div>`).join('');
+  renderProgress();
+}
+
+function toggleHabit(hi,di) {
+  ST.habits[hi*7+di] = !ST.habits[hi*7+di];
+  saveST(); renderHabits();
+}
+
+function renderProgress() {
+  const habits = getHabits();
+  const total = habits.length*7;
+  const done = ST.habits.filter(Boolean).length;
+  const meals = ST.meals.filter(Boolean).length;
+  const gym = ST.habits.filter((v,i)=>{ const hi=Math.floor(i/7); return getHabits()[hi]&&getHabits()[hi].name.includes('Treeni')&&v; }).length;
+
+  const pct = Math.round((done/total)*100);
+  const offset = 201-(pct/100)*201;
+  const rc = document.getElementById('ring-c');
+  if(rc) rc.style.strokeDashoffset=offset;
+  const rp = document.getElementById('ring-pct');
+  if(rp) rp.textContent=pct+'%';
+  const rd = document.getElementById('ring-desc');
+  if(rd) rd.textContent = pct<30?'Aloita tänään!':pct<60?'Hyvää työtä, jatka!':'Iskussa olet! 🔥';
+
+  document.getElementById('b-gym').textContent = Math.min(gym,3)+'/3';
+  document.getElementById('b-meal').textContent = meals+'/5';
+  document.getElementById('b-hab').textContent = done+'/'+total;
+  document.getElementById('bf-gym').style.width=Math.min(100,gym/3*100)+'%';
+  document.getElementById('bf-meal').style.width=(meals/5*100)+'%';
+  document.getElementById('bf-hab').style.width=(done/total*100)+'%';
+}
+
+// =========== FOOD ===========
+function renderMeals() {
+  const meals = getMeals();
+  const eaten = meals.reduce((s,m,i)=>s+(ST.meals[i]?m.k:0),0);
+  const pct = Math.min(100,Math.round(eaten/2700*100));
+  document.getElementById('kcal-eaten').textContent = eaten;
+  document.getElementById('kcal-pct').textContent = pct+'%';
+  document.getElementById('kcal-bar-fill').style.width = pct+'%';
+  document.getElementById('kcal-bar-fill').style.background = pct>=95?'var(--grn)':pct>=70?'var(--yel)':'var(--acc)';
+
+  document.getElementById('meal-list').innerHTML = meals.map((m,i)=>`
+    <div class="meal-item">
+      <div class="meal-header">
+        <span class="meal-emoji">${m.e}</span>
+        <div class="meal-info">
+          <div class="meal-name">${m.n}</div>
+          <div class="meal-kcal">${m.k} kcal • ${m.macro}</div>
+        </div>
+        <button class="meal-toggle" onclick="toggleRecipe(${i})">▼</button>
+        <div class="meal-check ${ST.meals[i]?'done':''}" onclick="toggleMeal(${i})">${ST.meals[i]?'✓':''}</div>
+      </div>
+      <div class="meal-expand" id="mr-${i}">
+        <p>${m.r}</p>
+      </div>
+    </div>`).join('');
+}
+
+function toggleMeal(i) {
+  ST.meals[i]=!ST.meals[i];saveST();renderMeals();renderProgress();
+}
+function toggleRecipe(i) {
+  const el=document.getElementById('mr-'+i);
+  el.classList.toggle('open');
+}
+
+function renderGrocery() {
+  const el=document.getElementById('grocery-list');
+  if(!ST.grocery.length){el.innerHTML='<p style="font-size:.78rem;color:var(--mut)">Kauppalista on tyhjä. Luo AI:lla tai lisää itse.</p>';return;}
+  el.innerHTML=ST.grocery.map((g,i)=>`
+    <div class="grocery-item">
+      <div class="gcheck ${g.done?'done':''}" onclick="toggleGrocery(${i})">${g.done?'✓':''}</div>
+      <span class="gname ${g.done?'done':''}">${g.name}</span>
+      <button class="gdel" onclick="delGrocery(${i})">✕</button>
+    </div>`).join('');
+}
+
+function toggleGrocery(i){ST.grocery[i].done=!ST.grocery[i].done;saveST();renderGrocery();}
+function delGrocery(i){ST.grocery.splice(i,1);saveST();renderGrocery();}
+function addGrocery(){
+  const v=document.getElementById('gro-inp').value.trim();
+  if(!v)return;
+  ST.grocery.push({name:v,done:false});
+  document.getElementById('gro-inp').value='';
+  saveST();renderGrocery();
+}
+
+async function genGroceryAI() {
+  toast('AI luo kauppalistan... 🛒');
+  try {
+    const resp = await callAI('Luo kauppalista viikolle. Tavoite 2700kcal/päivä. Käyttäjä tykkää: kanasta, riisistä, bataatista, jauhelihasta, kaurahiutaleista, rahkasta. Anna lista muodossa: "tuote - määrä". Max 20 tuotetta. Vain lista, ei muuta tekstiä.');
+    const lines = resp.split('\n').filter(l=>l.trim()&&l.includes('-'));
+    ST.grocery = lines.map(l=>({name:l.trim().replace(/^[-•*]\s*/,''),done:false}));
+    saveST();renderGrocery();
+    toast('Kauppalista luotu! 🛒');
+  } catch(e){ toast('Virhe — yritä uudelleen'); }
+}
+
+// =========== CALENDAR ===========
+function renderCal() {
+  const y=ST.calYear, mo=ST.calMonth;
+  const monthNames=['Tammikuu','Helmikuu','Maaliskuu','Huhtikuu','Toukokuu','Kesäkuu','Heinäkuu','Elokuu','Syyskuu','Lokakuu','Marraskuu','Joulukuu'];
+  document.getElementById('cal-month-title').textContent=monthNames[mo]+' '+y;
+  document.getElementById('cal-month-label').textContent=monthNames[mo]+' '+y;
+
+  const first=new Date(y,mo,1).getDay();
+  const startOffset=(first===0?6:first-1);
+  const daysInMonth=new Date(y,mo+1,0).getDate();
+  const today=new Date();
+
+  let html='';
+  ['Ma','Ti','Ke','To','Pe','La','Su'].forEach(d=>{ html+=`<div class="cal-day-name">${d}</div>`; });
+
+  for(let i=0;i<startOffset;i++) html+=`<div class="cal-day empty"></div>`;
+  for(let d=1;d<=daysInMonth;d++){
+    const isToday=today.getFullYear()===y&&today.getMonth()===mo&&today.getDate()===d;
+    const key=`${y}-${mo}-${d}`;
+    const hasEv=ST.events[key]&&ST.events[key].length>0;
+    const isSal=isSalaryDay(y,mo,d-1);
+    html+=`<div class="cal-day ${isToday?'today':''} ${hasEv?'has-event':''} ${isSal?'salary-day':''}" onclick="selectDay(${y},${mo},${d})">${d}${isSal?'<span style="font-size:.45rem;color:var(--yel)">💰</span>':''}</div>`;
+  }
+  document.getElementById('cal-grid').innerHTML=html;
+  renderEvents(y,mo,today.getDate());
+}
+
+let selectedDay={y:new Date().getFullYear(),mo:new Date().getMonth(),d:new Date().getDate()};
+
+function selectDay(y,mo,d){
+  selectedDay={y,mo,d};
+  const months=['tammikuuta','helmikuuta','maaliskuuta','huhtikuuta','toukokuuta','kesäkuuta','heinäkuuta','elokuuta','syyskuuta','lokakuuta','marraskuuta','joulukuuta'];
+  document.getElementById('cal-selected-label').textContent=`${d}. ${months[mo]}`;
+  renderEvents(y,mo,d);
+}
+
+function renderEvents(y,mo,d){
+  const key=`${y}-${mo}-${d}`;
+  const evs=ST.events[key]||[];
+  const el=document.getElementById('event-list');
+
+  // add salary event display
+  const salLabel = isSalaryDay(y,mo,d-1)?`<div class="event-item" style="border-left-color:var(--yel)"><div class="event-dot" style="background:var(--yel)"></div><div class="event-body"><div class="event-title">💰 Palkkapäivä!</div><div class="event-time">Nordnet 250€ • ASP 100€ • Puskuri 100€ • Käyttö 350€</div></div></div>`:'';
+
+  el.innerHTML = salLabel + (evs.length?evs.map((e,i)=>`
+    <div class="event-item" style="border-left-color:${e.color||'var(--acc)'}">
+      <div class="event-dot" style="background:${e.color||'var(--acc)'}"></div>
+      <div class="event-body">
+        <div class="event-title">${e.title}</div>
+        <div class="event-time">${e.time||''}</div>
+      </div>
+      <button class="event-del" onclick="delEvent('${key}',${i})">✕</button>
+    </div>`).join(''):'<p style="font-size:.78rem;color:var(--mut)">Ei tapahtumia tänä päivänä.</p>');
+}
+
+function addEvent(){
+  const title=document.getElementById('ev-title').value.trim();
+  if(!title)return;
+  const {y,mo,d}=selectedDay;
+  const key=`${y}-${mo}-${d}`;
+  if(!ST.events[key])ST.events[key]=[];
+  ST.events[key].push({title,time:document.getElementById('ev-time').value,color:document.getElementById('ev-color').value});
+  document.getElementById('ev-title').value='';
+  document.getElementById('ev-time').value='';
+  saveST();renderCal();renderEvents(y,mo,d);
+  toast('Tapahtuma lisätty! 📅');
+}
+
+function delEvent(key,i){ST.events[key].splice(i,1);saveST();const {y,mo,d}=selectedDay;renderCal();renderEvents(y,mo,d);}
+function calPrev(){ST.calMonth--;if(ST.calMonth<0){ST.calMonth=11;ST.calYear--;}saveST();renderCal();}
+function calNext(){ST.calMonth++;if(ST.calMonth>11){ST.calMonth=0;ST.calYear++;}saveST();renderCal();}
+
+// =========== FINANCE ===========
+function renderFinance() {
+  const asp=ST.asp||3000,inv=ST.invest||0,buf=ST.buffer||0;
+  const exp=(ST.expenses||[]).reduce((s,e)=>s+e.amt,0);
+
+  document.getElementById('fin-asp').textContent=asp.toLocaleString('fi-FI')+' €';
+  document.getElementById('fin-invest').textContent=inv.toLocaleString('fi-FI')+' €';
+  document.getElementById('fin-buf').textContent=buf.toLocaleString('fi-FI')+' €';
+  document.getElementById('fin-exp').textContent=exp.toLocaleString('fi-FI')+' €';
+  document.getElementById('asp-cur').textContent=asp.toLocaleString('fi-FI')+' €';
+  document.getElementById('asp-bar').style.width=Math.min(100,asp/10000*100)+'%';
+
+  const monthsLeft=Math.ceil((10000-asp)/200);
+  document.getElementById('asp-eta').textContent=asp>=10000?'🎉 ASP täynnä! Hae asuntolainaa!':
+    `Täyteen ~${monthsLeft} kuukautta (${Math.round(monthsLeft/12*10)/10} vuotta) jos lisäät 200€/kk`;
+
+  const ns=getNextSalary();
+  if(ns){
+    const diff=Math.ceil((ns-new Date())/(1000*60*60*24));
+    document.getElementById('next-salary-date').textContent=ns.toLocaleDateString('fi-FI',{day:'numeric',month:'long'});
+    document.getElementById('days-to-salary').textContent=diff===0?'Tänään! 🎉':diff+'pv';
+  }
+
+  document.getElementById('inp-asp').value=asp;
+  document.getElementById('inp-invest').value=inv;
+  document.getElementById('inp-buf').value=buf;
+
+  renderExpenses();
+}
+
+function renderExpenses(){
+  const el=document.getElementById('exp-list');
+  const exps=ST.expenses||[];
+  el.innerHTML=exps.length?exps.map((e,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--s2);border-radius:9px;margin-bottom:5px">
+      <span style="font-size:.85rem;flex:1">${e.name}</span>
+      <span style="font-size:.85rem;font-weight:600;color:var(--red)">−${e.amt}€</span>
+      <button style="background:none;border:none;color:var(--mut);cursor:pointer" onclick="delExp(${i})">✕</button>
+    </div>`).join(''):'<p style="font-size:.78rem;color:var(--mut)">Ei kuluja vielä.</p>';
+}
+
+function addExpense(){
+  const n=document.getElementById('exp-name').value.trim();
+  const a=parseFloat(document.getElementById('exp-amt').value);
+  if(!n||!a)return;
+  ST.expenses.push({name:n,amt:a});
+  document.getElementById('exp-name').value='';
+  document.getElementById('exp-amt').value='';
+  saveST();renderFinance();toast('Kulu lisätty 💸');
+}
+function delExp(i){ST.expenses.splice(i,1);saveST();renderFinance();}
+
+function saveFinance(){
+  ST.asp=parseFloat(document.getElementById('inp-asp').value)||3000;
+  ST.invest=parseFloat(document.getElementById('inp-invest').value)||0;
+  ST.buffer=parseFloat(document.getElementById('inp-buf').value)||0;
+  saveST();renderFinance();toast('Tallennettu ✅');
+}
+
+// =========== AI ===========
+async function callAI(prompt, history=[]) {
+  const msgs = history.length ? history : [{role:'user',content:prompt}];
+  const resp = await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      model:'claude-sonnet-4-6',
+      max_tokens:1000,
+      system:`Olet henkilökohtainen valmentaja, ravintoneuvoja ja talouscoach. Käyttäjä:
+- 20-vuotias suomalainen mies, Willein007
+- Palkka 700€ / 2 viikkoa (joka toinen perjantai, seuraava pian)
+- Jaottelu: Nordnet 250€, ASP 100€, Puskuri 100€, Käyttö 350€
+- Asuu vanhemmilla (ei vuokraa)
+- ASP-tili: 3000€ (tavoite 10 000€ ensiasuntoon)
+- Nordnet: 0€ (aloittamassa)
+- Työvuorot: aamuviikko 06-14:30 tai iltaviikko 14:30-23
+- Treeniohjelma: sali 3x/vko + padel/sulkapallo
+- Ruoka: kana, riisi, bataatti, jauheliha, kaurapuuro, rahka
+- Kalorit: 2600–2800kcal/päivä
+- Haaveilee: M4 BMW, omistusasunto, sijoitukset, vapaus
+Anna konkreettisia neuvoja suomeksi. Ole kannustava. Käytä emojeja.`,
+      messages: msgs
+    })
+  });
+  const data = await resp.json();
+  return data.content?.map(c=>c.text||'').join('') || 'Virhe — yritä uudelleen';
+}
+
+async function sendChat(){
+  const inp=document.getElementById('chat-inp');
+  const text=inp.value.trim();if(!text)return;
+  inp.value='';await doChat(text);
+}
+
+async function quickAsk(text){showPage('chat');await doChat(text);}
+
+async function doChat(text){
+  const msgs=document.getElementById('chat-msgs');
+  const btn=document.getElementById('send-btn');
+  btn.disabled=true;
+  msgs.innerHTML+=`<div class="msg user">${text}</div>`;
+  msgs.innerHTML+=`<div class="msg ai loading" id="load-msg">Kirjoittaa...</div>`;
+  msgs.scrollTop=msgs.scrollHeight;
+
+  ST.chatHistory.push({role:'user',content:text});
+  try{
+    const reply=await callAI('',ST.chatHistory.slice(-12));
+    ST.chatHistory.push({role:'assistant',content:reply});
+    if(ST.chatHistory.length>20)ST.chatHistory.splice(0,ST.chatHistory.length-20);
+    saveST();
+    document.getElementById('load-msg').remove();
+    msgs.innerHTML+=`<div class="msg ai">${reply.replace(/\n/g,'<br>')}</div>`;
+    msgs.scrollTop=msgs.scrollHeight;
+  }catch(e){
+    document.getElementById('load-msg').textContent='Virhe — yritä uudelleen';
+  }
+  btn.disabled=false;
+}
+
+async function editHabitsAI(){
+  const text=document.getElementById('habit-edit-inp').value.trim();
+  if(!text)return;
+  const el=document.getElementById('habit-ai-reply');
+  el.style.display='block';
+  el.textContent='Valmentaja muokkaa rutiineja...';
+  try{
+    const reply=await callAI(`Käyttäjä haluaa muokata rutiineja: "${text}". Nykyiset rutiinit: ${getHabits().map(h=>h.name).join(', ')}. Anna lyhyt neuvo (2-3 lausetta) ja ehdota korjattu rutiinilista 5 kohtana muodossa: EMOJI Nimi. Merkitse lista selvästi.`);
+    el.innerHTML=reply.replace(/\n/g,'<br>');
+    toast('Valmentaja vastasi! ✅');
+  }catch(e){el.textContent='Virhe — yritä uudelleen';}
+}
+
+// =========== SUNDAY CHECK-IN ===========
+let sundayHistory=[];
+
+function checkSunday(){
+  const now=new Date();
+  const isSun=now.getDay()===0;
+  const todayStr=now.toDateString();
+  if(isSun && ST.sundayDone!==todayStr){
+    setTimeout(()=>openSunday(),1500);
+  }
+}
+
+async function openSunday(){
+  sundayHistory=[];
+  document.getElementById('sunday-modal').classList.remove('hidden');
+  const msgs=document.getElementById('sunday-chat');
+  msgs.innerHTML='<div class="msg ai loading" id="sun-load">Valmentaja kirjoittaa...</div>';
+  try{
+    const reply=await callAI('Tänään on sunnuntai. Aloita viikkopalaveri. Kysy ensin lyhyesti: 1) Miten viikko meni kokonaisuudessaan? Mikä onnistui? Käy läpi treeni, ruoka ja raha yhdessä kysymyksessä. Ole lämmin ja kannustava.');
+    sundayHistory.push({role:'assistant',content:reply});
+    document.getElementById('sun-load').remove();
+    msgs.innerHTML+=`<div class="msg ai">${reply.replace(/\n/g,'<br>')}</div>`;
+  }catch(e){document.getElementById('sun-load').textContent='Virhe';}
+}
+
+async function sundayReply(){
+  const inp=document.getElementById('sunday-inp');
+  const text=inp.value.trim();if(!text)return;
+  inp.value='';
+  const msgs=document.getElementById('sunday-chat');
+  msgs.innerHTML+=`<div class="msg user">${text}</div>`;
+  msgs.innerHTML+=`<div class="msg ai loading" id="sun-load2">Kirjoittaa...</div>`;
+  msgs.scrollTop=msgs.scrollHeight;
+  sundayHistory.push({role:'user',content:text});
+  try{
+    const reply=await callAI('',sundayHistory);
+    sundayHistory.push({role:'assistant',content:reply});
+    document.getElementById('sun-load2').remove();
+    msgs.innerHTML+=`<div class="msg ai">${reply.replace(/\n/g,'<br>')}</div>`;
+    msgs.scrollTop=msgs.scrollHeight;
+  }catch(e){document.getElementById('sun-load2').textContent='Virhe';}
+}
+
+function closeSunday(){
+  ST.sundayDone=new Date().toDateString();
+  saveST();
+  document.getElementById('sunday-modal').classList.add('hidden');
+}
+
+// =========== NAV ===========
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.getElementById('nav-'+name).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// =========== TOAST ===========
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2200);
+}
+
+// =========== UTILS ===========
+function getWeekNum(d){
+  d=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));
+  d.setUTCDate(d.getUTCDate()+4-(d.getUTCDay()||7));
+  const y=new Date(Date.UTC(d.getUTCFullYear(),0,1));
+  return Math.ceil((((d-y)/86400000)+1)/7);
+}
+
+// =========== INIT ===========
+document.getElementById('wa').classList.toggle('active',ST.weekType==='aamu');
+document.getElementById('wi').classList.toggle('active',ST.weekType==='ilta');
+ST.calYear=ST.calYear||new Date().getFullYear();
+ST.calMonth=ST.calMonth||new Date().getMonth();
+
+renderToday();
+renderHabits();
+renderMeals();
+renderGrocery();
+renderCal();
+renderFinance();
+checkSunday();
+
+setInterval(renderNextAction,60000);
+</script>
+</body>
+</html>
